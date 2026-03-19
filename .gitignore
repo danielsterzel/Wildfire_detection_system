@@ -9,5 +9,7 @@ venv/
 node_modules/
 build/
 
+dist/
+
 *.db
 *.sqlite3
