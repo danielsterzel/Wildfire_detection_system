@@ -6,7 +6,7 @@ class Simulation:
 
         self.grid = grid_arg if grid_arg else Grid()
 
-    def __tick(self):
+    def tick(self):
 
         next_symbols = []
 
