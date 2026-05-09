@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useEffect } from "react";
+import { Grid } from "./Grid";
 
 export function Dashboard() {
   const [currentSection, setCurrentSection] = useState("homeSection");
@@ -68,57 +69,60 @@ export function Dashboard() {
       </div>
       {showFunctionalSection && (
         <div
-          className={`absolute inset-0 h-[100vh] grid grid-cols-4 px-12 py-24 gap-4 h-screen
+          className={`relative w-full min-h-screen grid grid-cols-12 px-4 py-8 gap-2 bg-gray-950 auto-rows-max
         ${currentSection === "functionalSection" && "opacity-0 animate-gridFadeUp"}
       `}
         >
-          <div className="bg-white rounded-xl flex flex-col items-center py-4 px-4 justify-start">
-            <p className="border-b border-black text-center mx-auto max-w-md font-bold">«Environmental parameters»</p>
-            <div className="py-8 px-4">
-                <ul className="flex flex-col gap-4 justify-center max-w-xs mx-auto">
+          <div className="col-span-2 bg-white rounded-xl flex flex-col items-center py-3 px-3 justify-start overflow-y-auto h-fit">
+            <p className="border-b border-black text-center mx-auto max-w-md font-bold text-sm">«Environmental parameters»</p>
+            <div className="py-4 px-2">
+                <ul className="flex flex-col gap-2 justify-center max-w-xs mx-auto text-xs">
                     <li>
-                        <div className="flex items-center gap-4">
-                        <i className="fa-solid fa-temperature-half fa-fw text-lg"></i>Temperature: {temp}
+                        <div className="flex items-center gap-2">
+                        <i className="fa-solid fa-temperature-half fa-fw text-sm"></i>Temperature: {temp}
                         </div>
                     </li>
                     <li>
-                        <div className="flex items-center gap-4">
-                        <i className="fa-solid fa-droplet fa-fw text-lg"></i>Humidity: {humidity}
+                        <div className="flex items-center gap-2">
+                        <i className="fa-solid fa-droplet fa-fw text-sm"></i>Humidity: {humidity}
                         </div>
                     </li>
                     <li>
-                        <div className="flex items-center gap-4">
-                            <i className="fa-solid fa-gauge-high fa-fw text-lg"></i>Wind speed: {windSpeed}
+                        <div className="flex items-center gap-2">
+                            <i className="fa-solid fa-gauge-high fa-fw text-sm"></i>Wind speed: {windSpeed}
                         </div>
                     </li>
                     <li>
-                        <div className="flex items-center gap-4">
-                            <i className="fa-solid fa-wind fa-fw text-lg"></i>Wind direction: {windDirection}
+                        <div className="flex items-center gap-2">
+                            <i className="fa-solid fa-wind fa-fw text-sm"></i>Wind direction: {windDirection}
                         </div>
                     </li>
                     <li>
-                        <div className="flex items-center gap-4">
-                            <i className="fa-solid fa-cloud-sun fa-fw text-lg"></i>Solar Radiation: {solarRadiation} {/*[W/m²]*/}
+                        <div className="flex items-center gap-2">
+                            <i className="fa-solid fa-cloud-sun fa-fw text-sm"></i>Solar Radiation: {solarRadiation}
                         </div>
                     </li>
                     <li>
-                        <div className="flex items-center gap-4">
-                        <i className="fa-solid fa-smog fa-fw text-lg"></i>Gas and particulate concentration: {particleConcentration}{/*µg/m³*/}
+                        <div className="flex items-center gap-2">
+                        <i className="fa-solid fa-smog fa-fw text-sm"></i>Particulate: {particleConcentration}
                         </div>
                     </li>
                     <li>
-                        <div className="flex items-center gap-4">
-                            <i className="fa-solid fa-people-group fa-fw text-lg"></i>Human Activity Index: {humanActivity}
+                        <div className="flex items-center gap-2">
+                            <i className="fa-solid fa-people-group fa-fw text-sm"></i>Human Activity: {humanActivity}
                         </div>
                     </li>
                 </ul>
             </div>
           </div>
-          <div className="col-span-2 bg-white rounded-xl flex flex-col py-4 px-4 items-center justify-start">
-            <p className="border-b border-black text-center mx-auto max-w-md font-bold">¯\_(ツ)_/¯ ForestGrid ¯\_(ツ)_/¯</p>
+          <div className="col-span-8 h-fit">
+            <Grid />
           </div>
-          <div className="bg-white rounded-xl flex flex-col items-center py-4 px-4 justify-start">
-            <p className="border-b border-black text-center mx-auto max-w-md font-bold">Output modelu maybe? 💯💯💯💯💯💯💯💯💯💯💯💯💯💯</p>
+          <div className="col-span-2 bg-white rounded-xl flex flex-col items-center py-3 px-3 justify-start h-fit">
+            <p className="border-b border-black text-center mx-auto max-w-md font-bold text-sm">Statistics</p>
+            <div className="py-4 px-2">
+              <p className="text-xs text-gray-600">Simulation metrics will appear here</p>
+            </div>
           </div>
         </div>
       )}

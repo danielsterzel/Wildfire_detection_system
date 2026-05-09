@@ -5,9 +5,8 @@ from backend.system.simulation import Simulation
 router = APIRouter()
 
 grid = Grid()
-grid.start_fire(10,10)
+grid.start_fire(10, 10)
 simulation = Simulation(grid)
-
 
 
 @router.get("/grid")
