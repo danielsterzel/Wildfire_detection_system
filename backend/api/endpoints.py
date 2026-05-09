@@ -8,6 +8,8 @@ grid = Grid()
 grid.start_fire(10,10)
 simulation = Simulation(grid)
 
+
+
 @router.get("/grid")
 def get_grid():
     simulation.tick()
