@@ -8,6 +8,10 @@ interface Cell {
 
 interface GridData {
   cells: Cell[];
+  wind_speed?: number;
+  wind_direction?: string;
+  humidity?: number;
+  sectors?: { id: string; row_from: number; row_to: number; col_from: number; col_to: number; is_on_fire: boolean }[];
 }
 
 const GRID_SIZE = 20;
@@ -92,8 +96,31 @@ export function Grid() {
           gridTemplateColumns: `repeat(${GRID_SIZE}, ${CELL_SIZE}px)`,
           gap: "1px",
           backgroundColor: "#000",
+          position: "relative",
         }}
       >
+        {/* sector overlays */}
+        {gridData.sectors && gridData.sectors.map((s) => {
+          const top = s.row_from * (CELL_SIZE + 1);
+          const left = s.col_from * (CELL_SIZE + 1);
+          const width = (s.col_to - s.col_from + 1) * CELL_SIZE + (s.col_to - s.col_from) * 1;
+          const height = (s.row_to - s.row_from + 1) * CELL_SIZE + (s.row_to - s.row_from) * 1;
+          return (
+            <div key={s.id}
+              style={{
+                position: 'absolute',
+                top: `${top}px`,
+                left: `${left}px`,
+                width: `${width}px`,
+                height: `${height}px`,
+                border: `2px solid ${s.is_on_fire ? 'rgba(255,80,0,0.9)' : 'rgba(255,255,255,0.6)'}`,
+                boxSizing: 'border-box',
+                pointerEvents: 'none',
+                borderRadius: '4px',
+              }}
+            />
+          )
+        })}
         {grid.map((row, rowIdx) =>
           row.map((cell, colIdx) => (
             <div

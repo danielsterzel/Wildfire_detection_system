@@ -14,6 +14,30 @@ export function Dashboard() {
   const [particleConcentration, setParticleConcentration] = useState(0);
   const [humanActivity, setHumanActivity] = useState(0);
 
+  // poll backend for environment parameters
+  useEffect(() => {
+    let mounted = true;
+    const fetchEnv = async () => {
+      try {
+        const res = await fetch('/grid');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!mounted || !data) return;
+        if (data.wind_speed !== undefined) setWindSpeed(data.wind_speed);
+        if (data.wind_direction !== undefined) setWindDirection(data.wind_direction);
+        if (data.humidity !== undefined) setHumidity(data.humidity);
+      } catch (e) {
+        // ignore
+      }
+    };
+
+    const id = setInterval(fetchEnv, 1000);
+    fetchEnv();
+    return () => {
+      mounted = false;
+      clearInterval(id);
+    };
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
