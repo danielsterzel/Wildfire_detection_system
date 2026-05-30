@@ -1,156 +1,81 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Grid } from "./Grid";
 
 export function Dashboard() {
-  const [currentSection, setCurrentSection] = useState("homeSection");
-  const [showFunctionalSection, setShowFunctionalSection] = useState(false);
-
-  const [temp, setTemp] = useState(0);
+  const [started, setStarted] = useState(false);
   const [humidity, setHumidity] = useState(0);
   const [windSpeed, setWindSpeed] = useState(0);
   const [windDirection, setWindDirection] = useState("");
-  const [solarRadiation, setSolarRadiation] = useState(0);
-  const [particleConcentration, setParticleConcentration] = useState(0);
-  const [humanActivity, setHumanActivity] = useState(0);
 
-  // poll backend for environment parameters
   useEffect(() => {
-    let mounted = true;
     const fetchEnv = async () => {
       try {
-        const res = await fetch('/grid');
+        const res = await fetch("http://localhost:8000/grid");
         if (!res.ok) return;
         const data = await res.json();
-        if (!mounted || !data) return;
-        if (data.wind_speed !== undefined) setWindSpeed(data.wind_speed);
-        if (data.wind_direction !== undefined) setWindDirection(data.wind_direction);
-        if (data.humidity !== undefined) setHumidity(data.humidity);
-      } catch (e) {
-        // ignore
+        setWindSpeed(data.wind_speed ?? 0);
+        setWindDirection(data.wind_direction ?? "");
+        setHumidity(data.humidity ?? 0);
+      } catch {
+        // backend may not be running yet
       }
     };
 
-    const id = setInterval(fetchEnv, 1000);
+    const id = setInterval(fetchEnv, 1200);
     fetchEnv();
-    return () => {
-      mounted = false;
-      clearInterval(id);
-    };
+    return () => clearInterval(id);
   }, []);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
-        setCurrentSection((prevState) => {
-          if (prevState !== "homeSection") {
-            return prevState;
-          }
-          setShowFunctionalSection(true);
-
-          return "functionalSection";
-        });
-      }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter") setStarted(true);
     };
-
     window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   return (
-    <div>
-      <div
-        className="h-[85vh] w-screen relative bg-cover bg-center"
-        style={{ backgroundImage: "url('/forest.jpg')" }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/95" />
-        <div className="absolute inset-0 backdrop-blur-[0.3px]" />
-        <div className="absolute inset-0 h-full flex justify-center items-center">
-          <div
-            className={`flex flex-col justify-start items-center px-12 py-10 
-            rounded-2xl bg-white backdrop-blur-md -mt-[20vh]
-            border-2 border-teal-500
-        ${currentSection === "functionalSection" && "animate-fadeOutUp"}`}
-          >
-            <h1
-              className={`text-4xl w-fit transition-all duration-700 ease-out
-            ${currentSection === "homeSection" && "animate-fadeDown"}
-            `}
-            >
-              Wildfire Detection System
-            </h1>
-            <p
-              className={`pt-8 w-fit transition-all duration-700 ease-out text-xl text-gray-600 
-            ${currentSection === "homeSection" && "animate-fadeUp"}`}
-            >
-              Press Enter to begin
-            </p>
-          </div>
-        </div>
-      </div>
-      {showFunctionalSection && (
-        <div
-          className={`relative w-full min-h-screen grid grid-cols-12 px-4 py-8 gap-2 bg-gray-950 auto-rows-max
-        ${currentSection === "functionalSection" && "opacity-0 animate-gridFadeUp"}
-      `}
+    <main className="min-h-screen bg-zinc-950 text-white">
+      {!started && (
+        <section
+          className="relative flex min-h-screen items-center justify-center bg-cover bg-center px-6"
+          style={{ backgroundImage: "url('/forest.jpg')" }}
         >
-          <div className="col-span-2 bg-white rounded-xl flex flex-col items-center py-3 px-3 justify-start overflow-y-auto h-fit">
-            <p className="border-b border-black text-center mx-auto max-w-md font-bold text-sm">«Environmental parameters»</p>
-            <div className="py-4 px-2">
-                <ul className="flex flex-col gap-2 justify-center max-w-xs mx-auto text-xs">
-                    <li>
-                        <div className="flex items-center gap-2">
-                        <i className="fa-solid fa-temperature-half fa-fw text-sm"></i>Temperature: {temp}
-                        </div>
-                    </li>
-                    <li>
-                        <div className="flex items-center gap-2">
-                        <i className="fa-solid fa-droplet fa-fw text-sm"></i>Humidity: {humidity}
-                        </div>
-                    </li>
-                    <li>
-                        <div className="flex items-center gap-2">
-                            <i className="fa-solid fa-gauge-high fa-fw text-sm"></i>Wind speed: {windSpeed}
-                        </div>
-                    </li>
-                    <li>
-                        <div className="flex items-center gap-2">
-                            <i className="fa-solid fa-wind fa-fw text-sm"></i>Wind direction: {windDirection}
-                        </div>
-                    </li>
-                    <li>
-                        <div className="flex items-center gap-2">
-                            <i className="fa-solid fa-cloud-sun fa-fw text-sm"></i>Solar Radiation: {solarRadiation}
-                        </div>
-                    </li>
-                    <li>
-                        <div className="flex items-center gap-2">
-                        <i className="fa-solid fa-smog fa-fw text-sm"></i>Particulate: {particleConcentration}
-                        </div>
-                    </li>
-                    <li>
-                        <div className="flex items-center gap-2">
-                            <i className="fa-solid fa-people-group fa-fw text-sm"></i>Human Activity: {humanActivity}
-                        </div>
-                    </li>
-                </ul>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/45 to-zinc-950" />
+          <div className="relative z-10 mx-auto max-w-4xl text-center">
+            <div className="mb-5 inline-flex items-center rounded-full border border-emerald-300/30 bg-black/40 px-4 py-2 text-sm text-emerald-100 backdrop-blur">
+              Wind {windSpeed} m/s toward {windDirection || "N"} | Humidity {humidity} %
             </div>
+            <h1 className="text-5xl font-bold tracking-normal text-white md:text-7xl">Wildfire Detection System</h1>
+            <p className="mx-auto mt-5 max-w-2xl text-lg text-zinc-200">
+              Live fire spread simulation with service dispatch messages, operational telemetry, and configurable response units.
+            </p>
+            <button
+              onClick={() => setStarted(true)}
+              className="mt-8 rounded-md bg-emerald-500 px-6 py-3 text-sm font-bold text-zinc-950 shadow-lg shadow-emerald-950/40 hover:bg-emerald-400"
+            >
+              Open Operations Console
+            </button>
+            <div className="mt-4 text-sm text-zinc-300">Press Enter to begin</div>
           </div>
-          <div className="col-span-8 h-fit">
-            <Grid />
-          </div>
-          <div className="col-span-2 bg-white rounded-xl flex flex-col items-center py-3 px-3 justify-start h-fit">
-            <p className="border-b border-black text-center mx-auto max-w-md font-bold text-sm">Statistics</p>
-            <div className="py-4 px-2">
-              <p className="text-xs text-gray-600">Simulation metrics will appear here</p>
-            </div>
-          </div>
-        </div>
+        </section>
       )}
-      <div className="w-full h-[15vh] bg-black"></div>
-    </div>
+
+      {started && (
+        <section className="mx-auto min-h-screen w-full max-w-[1720px] px-5 py-5">
+          <header className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b border-zinc-800 pb-4">
+            <div>
+              <div className="text-xs uppercase tracking-[0.2em] text-emerald-300">Operations Console</div>
+              <h1 className="mt-1 text-3xl font-semibold tracking-normal">Wildfire Detection System</h1>
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs text-zinc-300">
+              <span className="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2">Wind {windSpeed} m/s toward {windDirection || "N"}</span>
+              <span className="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2">Humidity {humidity} %</span>
+            </div>
+          </header>
+          <Grid />
+        </section>
+      )}
+    </main>
   );
 }
